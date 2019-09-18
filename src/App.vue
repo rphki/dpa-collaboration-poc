@@ -1,7 +1,11 @@
 <template>
 
 	<v-app>
-		<v-app-bar app color="indigo" dark>
+		<v-app-bar app color="rgb(174, 210, 153)">
+			<v-toolbar-title class="headline text-uppercase">
+				<img class="logo" src="https://www.dpa.com/typo3conf/ext/dpa/Resources/Public/assets/images/logo.svg" alt="dpa">
+			</v-toolbar-title>
+			<v-spacer></v-spacer>
 			<v-toolbar-title class="headline">
 				<span>dpa Collaboration PoC</span>
 			</v-toolbar-title>
