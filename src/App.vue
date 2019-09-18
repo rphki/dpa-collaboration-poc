@@ -1,12 +1,26 @@
 <template>
-  <div id="app">
-    <button @click="createNewValueUnit">Add ValueUnit</button>
-    <ul>
-      <li v-for="valueUnit in valueUnits" :key="valueUnit.id">
-        {{valueUnit.name}} - {{valueUnit.content}} <button @click="deleteExistingValueUnit(valueUnit)">Delete</button>
-      </li>
-    </ul>
-  </div>
+
+	<v-app>
+		<v-app-bar app color="indigo" dark>
+			<v-toolbar-title class="headline">
+				<span>dpa Collaboration PoC</span>
+			</v-toolbar-title>
+			<v-spacer></v-spacer>
+			<v-toolbar-title class="headline">
+				<span class="font-weight-light">GraphQL &middot; DynamoDB &middot; Vue.js</span>
+			</v-toolbar-title>
+		</v-app-bar>
+		<v-content>
+
+			<button @click="createNewValueUnit">Add ValueUnit</button>
+			<ul>
+				<li v-for="valueUnit in valueUnits" :key="valueUnit.id">
+					{{valueUnit.name}} - {{valueUnit.content}} <button @click="deleteExistingValueUnit(valueUnit)">Delete</button>
+				</li>
+			</ul>
+
+		</v-content>
+	</v-app>
 </template>
 
 <script>
@@ -56,13 +70,4 @@
   };
 </script>
 
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+
