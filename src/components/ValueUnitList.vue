@@ -17,8 +17,8 @@
 					<v-list-item two-line v-for="valueUnit in valueUnits" :key="valueUnit.id">
 						<v-list-item-content>
 							<v-list-item-title>
-								{{valueUnit.name}}
 								<v-icon @click="deleteExistingValueUnit(valueUnit)">mdi-delete</v-icon>
+								{{valueUnit.name}}
 							</v-list-item-title>
 							<v-list-item-subtitle>{{valueUnit.content}}</v-list-item-subtitle>
 						</v-list-item-content>
