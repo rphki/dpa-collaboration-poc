@@ -49,24 +49,24 @@
 				await API.graphql(graphqlOperation(deleteValueUnit, {input: {id: valueUnit.id}}))
 			},
 			async getData() {
-				const valueUnitData = await API.graphql(graphqlOperation(listValueUnits));
-				this.valueUnits.push(...this.valueUnits, ...valueUnitData.data.listValueUnits.items);
+				const valueUnitData = await API.graphql(graphqlOperation(listValueUnits, { limit: 9999 }));
+				this.valueUnits.push(...this.valueUnits, ...valueUnitData.data['listValueUnits'].items);
 			},
 			subscribe() {
 				API.graphql(graphqlOperation(onCreateValueUnit)).subscribe({
 					next: (eventData) => {
-						const valueUnit = eventData.value.data.onCreateValueUnit;
+						const valueUnit = eventData.value.data['onCreateValueUnit'];
 						this.valueUnits.push(valueUnit);
 					}
-				})
+				});
 				API.graphql(graphqlOperation(onDeleteValueUnit)).subscribe({
 					next: (eventData) => {
-						const valueUnit = eventData.value.data.onDeleteValueUnit;
+						const valueUnit = eventData.value.data['onDeleteValueUnit'];
 						this.valueUnits = this.valueUnits.filter(function (el) {
 							return el.id !== valueUnit.id;
 						});
 					}
-				})
+				});
 			}
 		},
 		created() {
