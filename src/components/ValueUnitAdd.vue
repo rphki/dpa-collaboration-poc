@@ -1,5 +1,12 @@
 <template>
-	<v-btn @click="createNewValueUnit">Werteinheit hinzufügen</v-btn>
+	<v-list-item @click="createNewValueUnit">
+		<v-list-item-action>
+			<v-icon>mdi-plus-box</v-icon>
+		</v-list-item-action>
+		<v-list-item-content>
+			<v-list-item-title>Werteinheit in Folder legen</v-list-item-title>
+		</v-list-item-content>
+	</v-list-item>
 </template>
 
 <script>

@@ -33,7 +33,7 @@
 
 <script>
 	import API, {graphqlOperation} from '@aws-amplify/api';
-	import {createValueUnit, deleteValueUnit} from "../graphql/mutations";
+	import {deleteValueUnit} from "../graphql/mutations";
 	import {onCreateValueUnit, onDeleteValueUnit} from '../graphql/subscriptions';
 	import {listValueUnits} from '../graphql/queries';
 
