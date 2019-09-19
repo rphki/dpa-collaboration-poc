@@ -21,9 +21,16 @@
 			<v-list dense>
 
 				<v-stepper>
-					<v-subheader>(App im Connect-Ecosystem)</v-subheader>
+					<v-subheader>... in einer App im Connect-Ecosystem</v-subheader>
 				</v-stepper>
 
+				<v-list-item>
+				<v-list-item-content>
+					<v-list-item-content>
+						<v-list-item-title>...bei einer Werteinheit:</v-list-item-title>
+					</v-list-item-content>
+				</v-list-item-content>
+				</v-list-item>
 				<ValueUnitAdd/>
 
 			</v-list>
