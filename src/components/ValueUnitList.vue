@@ -1,15 +1,29 @@
 <template>
 	<v-container>
-		<v-layout text-center wrap>
+		<v-layout>
 
-			<button @click="createNewValueUnit">Add ValueUnit</button>
-			<ul>
-				<li v-for="valueUnit in valueUnits" :key="valueUnit.id">
-					{{valueUnit.name}} - {{valueUnit.content}}
-					<button @click="deleteExistingValueUnit(valueUnit)">Delete</button>
-				</li>
-			</ul>
-
+			<v-btn @click="createNewValueUnit">Werteinheit hinzufügen</v-btn>
+			<v-card	class="mx-auto" width="600" tile>
+				<v-toolbar color="white" flat>
+					<v-btn icon light>
+						<v-icon color="grey darken-2">mdi-arrow-left</v-icon>
+					</v-btn>
+					<v-toolbar-title class="grey--text text--darken-4">Test-Folder</v-toolbar-title>
+					<div class="flex-grow-1"></div>
+					<v-subheader right><v-icon left>mdi-account</v-icon> N. N.</v-subheader>
+				</v-toolbar>
+				<v-list>
+					<v-list-item two-line v-for="valueUnit in valueUnits" :key="valueUnit.id">
+						<v-list-item-content>
+							<v-list-item-title>
+								{{valueUnit.name}}
+								<v-icon @click="deleteExistingValueUnit(valueUnit)">mdi-delete</v-icon>
+							</v-list-item-title>
+							<v-list-item-subtitle>{{valueUnit.content}}</v-list-item-subtitle>
+						</v-list-item-content>
+					</v-list-item>
+				</v-list>
+			</v-card>
 		</v-layout>
 	</v-container>
 </template>
