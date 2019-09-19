@@ -16,6 +16,7 @@
 		</v-app-bar>
 
 		<v-content>
+			<ValueUnitAdd/>
 			<ValueUnitList/>
 		</v-content>
 
@@ -23,11 +24,13 @@
 </template>
 
 <script>
+	import ValueUnitAdd from './components/ValueUnitAdd';
 	import ValueUnitList from './components/ValueUnitList';
 
 	export default {
 		name: 'app',
 		components: {
+			ValueUnitAdd,
 			ValueUnitList,
 		}
 	};
