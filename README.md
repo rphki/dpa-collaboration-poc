@@ -4,6 +4,13 @@ Based on https://aws-amplify.github.io/docs/js/start?platform=vue
 
 ## Project setup
 Install Amplify CLI (see https://aws-amplify.github.io/docs/, also linked in the tutorial above)
+
+Add the following profile to ~/.aws/credentials
+```
+[amplify-collaboration-poc]
+aws_access_key_id=AKIATCN4ZOSGW7WNYPX7
+```
+...and slack Raphael or Wolf for the key ;-)
 ```
 yarn install
 amplify init
