@@ -36,38 +36,101 @@
 	import {deleteValueUnit} from "../graphql/mutations";
 	import {onCreateValueUnit, onDeleteValueUnit} from '../graphql/subscriptions';
 	import {listValueUnits} from '../graphql/queries';
+	import gql from 'graphql-tag';
+
 
 	export default {
 		name: 'ValueUnitList',
+		props: ['client'],
 		data() {
 			return {
-				valueUnits: []
+				valueUnits: [],
+				sClient: this.client,
+				createSub: null,
+				deleteSub: null
 			}
 		},
 		methods: {
 			async deleteExistingValueUnit(valueUnit) {
-				await API.graphql(graphqlOperation(deleteValueUnit, {input: {id: valueUnit.id}}))
+				//await API.graphql(graphqlOperation(deleteValueUnit, {input: {id: valueUnit.id}}))
+				await this.sClient.mutate({
+					mutation: gql(deleteValueUnit),
+					variables: {
+						input: {id: valueUnit.id}
+					},
+					optimisticResponse: () => {
+						const xx = {
+							__typename: 'ValueUnit',
+							id: valueUnit.id,
+							...valueUnit
+						};
+						return {
+							deleteValueUnit: xx
+						}
+					},
+					update: (cache, { data: { deleteValueUnit } }) => {
+						const query = gql(listValueUnits);
+						try {
+							const data = cache.readQuery({query: query, variables: this.variables});
+							data.listValueUnits.items = [
+								...data.listValueUnits.items.filter(item => item.id !== deleteValueUnit.id)
+							];
+							cache.writeQuery({query, data});
+						} catch(e) { /* */ }
+					}
+				})
 			},
 			async getData() {
-				const valueUnitData = await API.graphql(graphqlOperation(listValueUnits, { limit: 9999 }));
-				this.valueUnits.push(...this.valueUnits, ...valueUnitData.data['listValueUnits'].items);
+				try {
+					const valueUnitData = await API.graphql(graphqlOperation(listValueUnits, {limit: 9999}));
+					this.valueUnits.push(...this.valueUnits, ...valueUnitData.data['listValueUnits'].items);
+				} catch(e) { /* */ }
 			},
 			subscribe() {
-				API.graphql(graphqlOperation(onCreateValueUnit)).subscribe({
-					next: (eventData) => {
-						const valueUnit = eventData.value.data['onCreateValueUnit'];
-						this.valueUnits.push(valueUnit);
+				const momSub = this.sClient.subscribe({ query: gql(onCreateValueUnit) });
+				const momDel = this.sClient.subscribe({ query: gql(onDeleteValueUnit) });
+				const resub = () => {
+					const offline = function() {
+						try {
+							return !JSON.parse(localStorage.getItem('reduxPersist::offline')).online ;
+						} catch(TypeError) {
+							// Not in localstorage, so we are online
+							return false;
+						}};
+					if(offline()) {
+						setTimeout(
+								function(that){
+									try { that.subscribe(); } catch(ex){/* */}
+								}(this), 500);
+					} else {
+						this.subscribe();
 					}
-				});
-				API.graphql(graphqlOperation(onDeleteValueUnit)).subscribe({
+				};
+				const subCreateSetup = {
 					next: (eventData) => {
-						const valueUnit = eventData.value.data['onDeleteValueUnit'];
+						const valueUnit = eventData.data['onCreateValueUnit'];
+						this.valueUnits.push(valueUnit);
+					},
+					error: resub
+				};
+				const subDeleteSetup = {
+					next: (eventData) => {
+						const valueUnit = eventData.data['onDeleteValueUnit'];
 						this.valueUnits = this.valueUnits.filter(function (el) {
 							return el.id !== valueUnit.id;
 						});
-					}
-				});
-			}
+					},
+					error: resub
+				};
+				if(this.createSub !== null) {
+					this.createSub.unsubscribe();
+				}
+				this.createSub = momSub.subscribe(subCreateSetup);
+				if(this.deleteSub !== null) {
+					this.deleteSub.unsubscribe();
+				}
+				this.deleteSub = momDel.subscribe(subDeleteSetup);
+				}
 		},
 		created() {
 			this.getData();

@@ -10,16 +10,58 @@
 </template>
 
 <script>
-	import API, {graphqlOperation} from '@aws-amplify/api';
-	import {createValueUnit} from "../graphql/mutations";
+	import gql from 'graphql-tag';
+	import { createValueUnit } from "../graphql/mutations";
+	import {listValueUnits} from "../graphql/queries";
+	import { v4 as uuid } from 'uuid';
 
 	export default {
 		name: 'ValueUnitAdd',
+		props: ['client'],
+		data() {
+			return {
+				sClient: this.client
+			}
+		},
 		methods: {
 			async createNewValueUnit() {
 				let idx = Math.floor(Math.random() * examples.length);
 				const valueUnit = {name: examples[idx].name, content: examples[idx].content};
-				await API.graphql(graphqlOperation(createValueUnit, {input: valueUnit}))
+				await this.sClient.mutate({
+					mutation: gql(createValueUnit),
+					variables: {
+						input: valueUnit
+					},
+					optimisticResponse: () => {
+						const xx = {
+							__typename: 'ValueUnit',
+							id: uuid(),
+							...valueUnit
+						};
+						//console.log('optimistic', xx);
+						return {
+							createValueUnit: xx
+						}
+					},
+					update: (cache, { data: { createValueUnit } }) => {
+						const query = gql(listValueUnits);
+						//console.log('query', {query});
+						//console.log('cache', cache);
+						//console.log('client', this.sClient);
+						try {
+							const data = cache.readQuery({query: query, variables: this.variables});
+							data.listValueUnits.items = [
+								...data.listValueUnits.items.filter(item => item.id !== createValueUnit.id),
+								createValueUnit
+							];
+							cache.writeQuery({query, data});
+						} catch(e) {
+							//console.log('Update error', e);
+						}
+					}
+				})
+
+				//await API.graphql(graphqlOperation(createValueUnit, {input: valueUnit}))
 			}
 		}
 	}

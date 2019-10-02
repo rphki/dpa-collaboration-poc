@@ -31,21 +31,48 @@
 					</v-list-item-content>
 				</v-list-item-content>
 				</v-list-item>
-				<ValueUnitAdd/>
+				<ValueUnitAdd v-bind:client="client"/>
 
 			</v-list>
 		</v-navigation-drawer>
 
 		<v-content>
-			<ValueUnitList/>
+			<ValueUnitList v-bind:client="client"/>
 		</v-content>
 
 	</v-app>
 </template>
 
 <script>
+
 	import ValueUnitAdd from './components/ValueUnitAdd';
 	import ValueUnitList from './components/ValueUnitList';
+
+	import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+	import awsconfig from './aws-exports';
+	const client = new AWSAppSyncClient({
+		url: awsconfig.aws_appsync_graphqlEndpoint,
+		region: awsconfig.aws_appsync_region,
+		auth: {
+			type: AUTH_TYPE.API_KEY,
+			apiKey: awsconfig.aws_appsync_apiKey,
+		},
+		offlineConfig: {
+			callback: (err, succ) => {
+				if(err) {
+					// Maybe some sort of storage error? Seems unlikely that this is ever reached
+					/*const { mutation, variables } = err;
+
+					console.warn(`ERROR for ${mutation}`, err);*/
+				} else {
+					// The server received the mutation and has confirmed reception
+					const { mutation, variables } = succ;
+
+					console.info(`SUCCESS for ${mutation} with variables ${variables}`, succ);
+				}
+			},
+		},
+	});
 
 	export default {
 		name: 'app',
@@ -55,6 +82,7 @@
 		},
 		data: () => ({
 			drawer: null,
+			client: client
 		})
 	};
 </script>
